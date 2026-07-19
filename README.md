@@ -3,6 +3,7 @@
 ## Integrantes
 
 **Equipo:** 
+Baied Julián Eliel
 
 ## Fecha de entrega de parte 1
 
