@@ -4,6 +4,8 @@
 
 **Equipo:** 
 Baied Julián Eliel
+Barac Nicolás Agustín
+Darío José Román Rocha
 
 ## Fecha de entrega de parte 1
 
