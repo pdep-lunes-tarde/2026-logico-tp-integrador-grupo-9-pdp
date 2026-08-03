@@ -16,10 +16,6 @@ habitante(lernen, auberst, 1315, humano).
 habitante(frieren, weise, 100, elfo).
 habitante(eisen, riegel, 1150, enano).
 
-habitante(humano_default, pueblo, 2000, humano).
-habitante(enano_default, pueblo, 2000, enano).
-habitante(elfo_default, pueblo, 2000, elfo).
-
 % Parte b
 
 promedio_vida(humano,80).
@@ -38,6 +34,7 @@ estaViva(Persona, Anio) :-
     habitante(Persona, _, AnioNacimiento, _),
     AnioNacimiento =< Anio,
     not(muerte(Persona, Anio)).
+
 
 % conocimiento(Persona, Hazaña, Anio, Medio)
 
@@ -108,7 +105,6 @@ buen_estado(bronce, _ , ListaMantenimiento, Anio) :-
     Anio >= AnioMantenimiento,
     Anio - AnioMantenimiento =< 15.
 
-
 dentro_de_duracion(presencio, _, _).
 
 dentro_de_duracion(escucho_cancion, AnioConocimiento, Anio) :-
@@ -116,7 +112,6 @@ dentro_de_duracion(escucho_cancion, AnioConocimiento, Anio) :-
 
 dentro_de_duracion(leyo_libro(Paginas), AnioConocimiento, Anio) :-
     Anio =< AnioConocimiento + Paginas.
-
 
 
 % Parte b
@@ -154,45 +149,58 @@ conmemorar_hazanias(destruir_schlat_el_omnisciente, estatua(marmol, heroe_del_su
 :- begin_tests(tpIntegrador, []).
 
 test("Una persona humana esta viva en promedio hasta 80 años despues de su nacimiento"):-
-    estaViva(humano_default, 2020),
-    not(estaViva(humano_default, 1900)),
-    not(estaViva(humano_default, 2100)).
+    estaViva(kanne, 1370). % Kanne es una humana nacida en el año 1365
+
+test("Una persona humana no esta viva pasados 80 años de su nacimiento"):-
+    not(estaViva(kanne, 2000)). 
 
 test("Una persona enana esta viva en promedio hasta 350 años despues de su nacimiento"):-
-    estaViva(enano_default, 2100),
-    not(estaViva(enano_default, 1900)),
-    not(estaViva(enano_default, 2400)).
+    estaViva(voll, 1550). % Voll es un enano nacido en el año 1200
 
-test("Una persona elfo no esta vivo antes de su nacimiento"):- 
-    not(estaViva(elfo_default,1900)).
-    
+test("Una persona enana no esta viva pasados 350 años de su nacimiento"):-
+    not(estaViva(voll, 1551)).
+
+test("Una persona elfo no muere por vejez"):- 
+    estaViva(serie, 5000). % Serie es una persona elfo nacida en el 500
+
+test("Ninguna persona esta viva antes de su año de nacimiento"):-
+    not(estaViva(kanne, 1364)), % Kanne nacio en el 1365
+    not(estaViva(voll, 1199)), % Voll nacio en el 1200
+    not(estaViva(serie, 499)). % Serie nacio en el 500
+
 test("Si una persona presencia una hazaña la recuerda por el resto de su vida desde ese momento", nondet):-
-    recuerda(wirbel, rescatar_hermana_de_wirbel, 1400),
-    not(recuerda(wirbel, rescatar_hermana_de_wirbel, 1300)),
-    not(recuerda(wirbel, rescatar_hermana_de_wirbel, 1500)).
+    recuerda(wirbel, rescatar_hermana_de_wirbel, 1400), % Wirbel presencio en 1390 la hazaña rescatar_hermana_de_wirbel
+    not(recuerda(wirbel, rescatar_hermana_de_wirbel, 1500)). % Wirbel es un humano nacido en 1350, ya no estaría vivo pasados 80 años
+
 test("Si una persona escucho una canción sobre esa hazaña la recuerda por 15 años desde ese momento", nondet):-
-    recuerda(lawine, destruir_demonio_aura, 1400),
-    not(recuerda(lawine, destruir_demonio_aura, 1380)),
-    not(recuerda(lawine, destruir_demonio_aura, 1410)).
+    recuerda(lawine, destruir_demonio_aura, 1400), % Lawine escucho en 1393 una cancion sobre la hazaña destruir_demonio_aura
+    not(recuerda(lawine, destruir_demonio_aura, 1410)). % Lawine no recordaria la hazaña pasados 15 años
+
 test("Si una persona leyó un libro sobre una hazaña, la recuerda por tantos años como paginas que tenga el libro", nondet):-
-    recuerda(voll, destruir_demonio_aura, 1450),
-    not(recuerda(voll, destruir_demonio_aura, 1460)),
-    not(recuerda(voll, destruir_demonio_aura, 1300)).
+    recuerda(voll, destruir_demonio_aura, 1450), % Voll leyo en 1400 un libro de 50 paginas sobre la hazaña destruir_demonio_aura
+    not(recuerda(voll, destruir_demonio_aura, 1460)). % Voll no recordaria la hazaña pasados 50 años (50 paginas)
+
+test("Ninguna persona recuerda una hazaña antes de conocerla", nondet) :-
+    not(recuerda(wirbel, rescatar_hermana_de_wirbel, 1360)), % Wirbel conocio esta hazaña en 1390 
+    not(recuerda(lawine, destruir_demonio_aura, 1380)), % Lawine conocio esta hazaña en 1393
+    not(recuerda(voll, destruir_demonio_aura, 1300)). % Voll conocio esta hazaña en 1400
+
 test("Si en el pueblo en el que vive una persona se conmemora una hazaña con un dia festivo la recuerda por el resto de su vida desde ese momento"):-
-    recuerda(fern, destruir_rey_demonio, 1400),
-    not(recuerda(voll, destruir_rey_demonio, 1400)).
+    recuerda(fern, destruir_rey_demonio, 1400), % Fern vive en Weise, donde hay un dia festivo para la hazaña destruir_rey_demonio desde 1340
+    not(recuerda(voll, destruir_rey_demonio, 1400)). % Voll vive en Ende, donde no se conmemora la hazaña destruir_rey_demonio
 
 test("Si en el pueblo en el que vive una persona hay una estatua que conmemora una hazaña, la recuerda si sigue estando en buen estado", nondet):-
-    recuerda(lawine, destruir_rey_demonio, 1400),
-    not(recuerda(lawine, destruir_rey_demonio, 1390)).
+    recuerda(lawine, destruir_rey_demonio, 1400), % Lawine vive en Auberst, donde hay una estatua de bronce de destruir_rey_demonio que recibio mantenimiento en 1400 y 1450
+    not(recuerda(lawine, destruir_rey_demonio, 1390)). % En 1390 la estatua de bronce de destruir_rey_demonio no se encuentra en buen estado
 
 test("Una hazaña esta corroborada si solo hay una versión de la misma", nondet):-
-    corroborada(rescatar_hermana_de_wirbel).
+    corroborada(rescatar_hermana_de_wirbel). % Solo hay una version de la hazaña rescatar_hermana_de_wirbel
+
 test("Una hazaña no esta corrobarada si hubo diferentes personas que la llevaron a cabo o diferente lugar en el que ocurrió la hazaña", nondet):-
-    not(corroborada(destruir_demonio_aura)).
+    not(corroborada(destruir_demonio_aura)). % Hay 2 versiones de la hazaña destruir_demonio_aura donde varian quienes y donde se llevo cabo
 
 test("Una hazaña pasa al olvido si ya nadie la recuerda ese año", nondet):-
-    al_olvido(destruir_demonio_aura, 2000),
-    not(al_olvido(rescatar_hermana_de_wirbel, 1400)).
+    al_olvido(destruir_demonio_aura, 2000), % Para el año 2000 quienes tenian conocimiento de la hazaña destruir_demonio_aura (Voll y Lawine) ya no la recordarian
+    not(al_olvido(rescatar_hermana_de_wirbel, 1400)). % Para el año 1400 Wirbel y Freiren recordarian la hazaña rescatar_hermana_de_wirbel
 
 :- end_tests(tpIntegrador).
