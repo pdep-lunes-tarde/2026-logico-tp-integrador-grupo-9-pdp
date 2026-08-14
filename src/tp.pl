@@ -70,7 +70,6 @@ conocimiento(kanne,
 
 conocimiento(Persona, Hazania, AnioConmemoracion, Medio) :-
     habitante(Persona, Pueblo, _, _),
-    estaViva(Persona, AnioConmemoracion),
     conmemorar_hazanias(Hazania, AnioConmemoracion, Medio, Pueblo).
 
 % recuerda(Persona, NombreHazaña, Anio)
@@ -179,7 +178,7 @@ test("Ninguna persona recuerda una hazaña antes de conocerla", nondet) :-
     not(recuerda(lawine, destruir_demonio_aura, 1380)), % Lawine conocio esta hazaña en 1393
     not(recuerda(voll, destruir_demonio_aura, 1300)). % Voll conocio esta hazaña en 1400
 
-test("Si en el pueblo en el que vive una persona se conmemora una hazaña con un dia festivo la recuerda por el resto de su vida desde ese momento"):-
+test("Si en el pueblo en el que vive una persona se conmemora una hazaña con un dia festivo la recuerda por el resto de su vida desde ese momento", nondet):-
     recuerda(fern, destruir_rey_demonio, 1400), % Fern vive en Weise, donde hay un dia festivo para la hazaña destruir_rey_demonio desde 1340
     not(recuerda(voll, destruir_rey_demonio, 1400)). % Voll vive en Ende, donde no se conmemora la hazaña destruir_rey_demonio
 
