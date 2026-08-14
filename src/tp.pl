@@ -25,7 +25,6 @@ promedio_vida(enano,350).
 % muerte(Persona, Anio) 
 muerte(Persona, Anio) :-
     habitante(Persona, _, AnioNacimiento, Raza),
-    Raza \= elfo,
     promedio_vida(Raza, Vida),
     Anio > AnioNacimiento + Vida.
 
@@ -69,6 +68,11 @@ conocimiento(kanne,
              1375, presencio).
 
 
+conocimiento(Persona, Hazania, AnioConmemoracion, Medio) :-
+    habitante(Persona, Pueblo, _, _),
+    estaViva(Persona, AnioConmemoracion),
+    conmemorar_hazanias(Hazania, AnioConmemoracion, Medio, Pueblo).
+
 % recuerda(Persona, NombreHazaña, Anio)
 
 recuerda(Persona, NombreHazania, Anio) :-
@@ -77,33 +81,19 @@ recuerda(Persona, NombreHazania, Anio) :-
     estaViva(Persona, Anio),
     dentro_de_duracion(Medio, AnioConocimiento, Anio).
 
-recuerda(Persona, NombreHazania, Anio) :-
-    habitante(Persona, Pueblo, _, _),
-    conmemorar_hazanias(NombreHazania , estatua(Tipo, _, AnioConstruccion, ListaMantenimiento), Pueblo),
-    buen_estado(Tipo, AnioConstruccion, ListaMantenimiento, Anio).
+limite_mantenimiento(marmol, 30).
+limite_mantenimiento(bronce, 15).
 
-recuerda(Persona, NombreHazania, Anio) :-
-    habitante(Persona, Pueblo, _, _),
-    conmemorar_hazanias(NombreHazania , dia_festivo(AnioFestival), Pueblo),
-    Anio >= AnioFestival.
+evento_de_cuidado(AnioConstruccion, _, AnioConstruccion).
 
-buen_estado(marmol, AnioConstruccion, _, Anio) :-
-    Anio >= AnioConstruccion,
-    Anio - AnioConstruccion =< 30.
+evento_de_cuidado(_, ListaMantenimiento, AnioMantenimiento) :-
+    member(AnioMantenimiento, ListaMantenimiento).
 
-buen_estado(marmol, _ , ListaMantenimiento, Anio) :-
-    member(AnioMantenimiento, ListaMantenimiento),
-    Anio >= AnioMantenimiento,
-    Anio - AnioMantenimiento =< 30.
-
-buen_estado(bronce, AnioConstruccion, _, Anio) :-
-    Anio >= AnioConstruccion,
-    Anio - AnioConstruccion =< 15.
-
-buen_estado(bronce, _ , ListaMantenimiento, Anio) :-
-    member(AnioMantenimiento, ListaMantenimiento),
-    Anio >= AnioMantenimiento,
-    Anio - AnioMantenimiento =< 15.
+buen_estado(Tipo, AnioConstruccion, ListaMantenimiento, Anio) :-
+    limite_mantenimiento(Tipo, Limite),
+    evento_de_cuidado(AnioConstruccion, ListaMantenimiento, AnioEvento),
+    Anio >= AnioEvento,
+    Anio - AnioEvento =< Limite.
 
 dentro_de_duracion(presencio, _, _).
 
@@ -113,6 +103,10 @@ dentro_de_duracion(escucho_cancion, AnioConocimiento, Anio) :-
 dentro_de_duracion(leyo_libro(Paginas), AnioConocimiento, Anio) :-
     Anio =< AnioConocimiento + Paginas.
 
+dentro_de_duracion(dia_festivo, _, _).
+
+dentro_de_duracion(estatua(Tipo, _, ListaMantenimiento), AnioConstruccion, Anio) :-
+    buen_estado(Tipo, AnioConstruccion, ListaMantenimiento, Anio).
 
 % Parte b
 
@@ -138,13 +132,13 @@ al_olvido(NombreHazania, Anio) :-
 % Punto 3
 % Parte a
 
-hazania(destruir_schlat_el_omnisciente, [heroe_del_sur], ende).
+% hazania(destruir_schlat_el_omnisciente, [heroe_del_sur], ende).
 
-conmemorar_hazanias(destruir_rey_demonio, dia_festivo(1340), weise).
+conmemorar_hazanias(hazania(destruir_rey_demonio, [frieren, himmel, heiter, eisen], ende), 1340, dia_festivo, weise).
 
-conmemorar_hazanias(destruir_rey_demonio, estatua(bronce, equipo_de_heroes, 1370, [1400, 1450]), auberst).
+conmemorar_hazanias(hazania(destruir_rey_demonio, [frieren, himmel, heiter, eisen], ende), 1370, estatua(bronce, equipo_de_heroes, [1400, 1450]), auberst).
 
-conmemorar_hazanias(destruir_schlat_el_omnisciente, estatua(marmol, heroe_del_sur, 1340, [1410]), auberst).
+conmemorar_hazanias(hazania(destruir_schlat_el_omnisciente, [heroe_del_sur], ende), 1340, estatua(marmol, heroe_del_sur, [1410]), auberst).
 
 :- begin_tests(tpIntegrador, []).
 
@@ -193,10 +187,16 @@ test("Si en el pueblo en el que vive una persona hay una estatua que conmemora u
     recuerda(lawine, destruir_rey_demonio, 1400), % Lawine vive en Auberst, donde hay una estatua de bronce de destruir_rey_demonio que recibio mantenimiento en 1400 y 1450
     not(recuerda(lawine, destruir_rey_demonio, 1390)). % En 1390 la estatua de bronce de destruir_rey_demonio no se encuentra en buen estado
 
+test("Una persona que ya falleció NO recuerda una hazaña conmemorada en su pueblo", nondet) :-
+    not(recuerda(lernen, destruir_rey_demonio, 1410)). % En1410 la estatua esta en buen estado, pero Lernen ya esta muerto.
+
+test("Una persona NO recuerda una hazaña conmemorada antes de su año de nacimiento", nondet) :-
+    not(recuerda(lawine, destruir_schlat_el_omnisciente, 1360)). % En 1360 la estatua estaba en buen estado, pero Lawine no habia nacido.
+
 test("Una hazaña esta corroborada si solo hay una versión de la misma", nondet):-
     corroborada(rescatar_hermana_de_wirbel). % Solo hay una version de la hazaña rescatar_hermana_de_wirbel
 
-test("Una hazaña no esta corrobarada si hubo diferentes personas que la llevaron a cabo o diferente lugar en el que ocurrió la hazaña", nondet):-
+test("Una hazaña NO esta corrobarada si hubo diferentes personas que la llevaron a cabo o diferente lugar en el que ocurrió la hazaña", nondet):-
     not(corroborada(destruir_demonio_aura)). % Hay 2 versiones de la hazaña destruir_demonio_aura donde varian quienes y donde se llevo cabo
 
 test("Una hazaña pasa al olvido si ya nadie la recuerda ese año", nondet):-
