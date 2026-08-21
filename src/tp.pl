@@ -138,6 +138,51 @@ conmemorar_hazanias(hazania(destruir_rey_demonio, [frieren, himmel, heiter, eise
 conmemorar_hazanias(hazania(destruir_rey_demonio, [frieren, himmel, heiter, eisen], ende), 1370, estatua(bronce, equipo_de_heroes, [1400, 1450]), auberst).
 
 conmemorar_hazanias(hazania(destruir_schlat_el_omnisciente, [heroe_del_sur], ende), 1340, estatua(marmol, heroe_del_sur, [1410]), auberst).
+% Punto 4 
+% Parte a
+puebloRecuerdaHazania(Hazania, Anio, Pueblo) :-
+    forall(
+        habitante(Persona, Pueblo, _, _),
+        recuerda(Persona, Hazania, Anio)
+    ).
+
+paginasPorPueblo(Pueblo, Anio, Numero):-
+    findall(Pagina, (conocimiento(Persona, _, Anio, leyo_libro(Pagina)), habitante(Persona, Pueblo, _, _)), Paginas),
+    length(Paginas, Numero).
+
+puebloMasLector(Anio, Pueblo) :-
+    habitante(_, Pueblo, _, _),
+    paginasPorPueblo(Pueblo, Anio, Cantidad),
+    not((
+        habitante(_, OtroPueblo, _, _),
+        OtroPueblo \= Pueblo,
+        paginasPorPueblo(OtroPueblo, Anio, OtraCantidad),
+        OtraCantidad > Cantidad
+    )).
+
+puebloMusical(Pueblo, Anio) :-
+    findall(Hazania,
+        (habitante(Persona, Pueblo, _, _),
+         conocimiento(Persona, Hazania, Anio, escucho_cancion)),
+        Hazanias1),
+    findall(Hazania,
+        (habitante(Persona, Pueblo, _, _),
+         conocimiento(Persona, Hazania, Anio, Medio),
+         Medio /= escucho_cancion,
+         not(member(Hazania, Hazanias1))),
+        Hazanias2),
+    length(Hazanias1, N),
+    length(Hazanias2, M),
+    N > M.
+
+puebloChismoso(Pueblo, Anio):-
+    forall(puebloRecuerdaHazania(Hazania,Anio,Pueblo), not(corrobarada(Hazania))).
+
+hazaniaImportantePueblo(Hazania, Pueblo, Anio):-
+    forall(habitante(Persona, Pueblo, Anio,_), conocimiento(Persona, Hazania, _, _)).
+
+tiemposSinPrecedentes(Pueblo, Anio):-
+    forall(hazaniaImportantePueblo(Hazania, Pueblo, Anio), conocimiento(_, Hazania, _, presencio)).
 
 :- begin_tests(tpIntegrador, []).
 
@@ -202,4 +247,31 @@ test("Una hazaña pasa al olvido si ya nadie la recuerda ese año", nondet):-
     al_olvido(destruir_demonio_aura, 2000), % Para el año 2000 quienes tenian conocimiento de la hazaña destruir_demonio_aura (Voll y Lawine) ya no la recordarian
     not(al_olvido(rescatar_hermana_de_wirbel, 1400)). % Para el año 1400 Wirbel y Freiren recordarian la hazaña rescatar_hermana_de_wirbel
 
+test("Una hazaña es recordada por un pueblo si todos sus habitantes la recuerdan", nondet):-
+    puebloRecuerdaHazania(destruir_rey_demonio, 1400, weise),
+    puebloRecuerdaHazania(rescatar_hermana_de_wirbel, 1395, klares),
+    not(puebloRecuerdaHazania(destruir_rey_demonio, 1395, klares)).
+
+test("El total de paginas leidas por un pueblo es la sumatoria de las cantidades leidas por cada habitante"):-
+    paginasPorPueblo(weise, 1335, 100),
+    paginasPorPueblo(weise, 0, 1336).
+
+test("El pueblo mas lector es aquel que hasta ese año sus habitantes son los que mas leyeron"):-
+    puebloMasLector(1400, ende).
+
+test("Cuando la mayoria de hazañas recordadas en un pueblo son recordadas mediante canciones entonces es un pueblo musical"):-
+    puebloMusical(auberst, 1395),
+    not(puebloMusical(weise,1400)).
+
+test("Un pueblo es chismoso si todas las hazañas que se recuerdan no estan corroboradas"):-
+    puebloChismoso(ende, 1420),
+    not(puebloChismoso(weise, 1400)).
+
+test("Si todos los habitantes que viven en un pueblo en cierto año recuerdan una hazaña entonces la misma es importante"):-
+    hazaniaImportantePueblo(destruir_rey_demonio, weise, 1400),
+    not(hazaniaImportantePueblo(recuperar_gato_perdido, weise, 1400)).
+
+test("Un pueblo vive tiempos sin precedentes si todas las hazañas importantes del pueblo fueron precenciadas por alguien"):-
+    tiemposSinPrecedentes(klares, 1395),
+    not(tiemposSinPrecedentes(weise, 1400)).
 :- end_tests(tpIntegrador).
