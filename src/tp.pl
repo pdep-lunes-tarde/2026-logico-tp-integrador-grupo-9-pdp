@@ -148,7 +148,7 @@ puebloRecuerdaHazania(Hazania, Anio, Pueblo) :-
 
 paginasPorPueblo(Pueblo, Anio, Numero):-
     findall(Pagina, (conocimiento(Persona, _, Anio, leyo_libro(Pagina)), habitante(Persona, Pueblo, _, _)), Paginas),
-    length(Paginas, Numero).
+    sum_list(Paginas, Numero).
 
 puebloMasLector(Anio, Pueblo) :-
     habitante(_, Pueblo, _, _),
@@ -184,9 +184,16 @@ hazaniaImportantePueblo(Hazania, Pueblo, Anio) :-
         recuerda(Persona, Hazania, Anio)
     ).
 
-tiemposSinPrecedentes(Pueblo, Anio):-
-    forall(hazaniaImportantePueblo(Hazania, Pueblo, Anio), conocimiento(_, Hazania, _, presencio)).
-
+tiemposSinPrecedentes(Pueblo, Anio) :-
+    findall(
+        Hazania,
+        hazaniaImportantePueblo(Hazania, Pueblo, Anio),
+        Hazanias
+    ),
+    forall(
+        member(Hazania, Hazanias),
+        conocimiento(_, Hazania, _, presencio)
+    ).
 :- begin_tests(tpIntegrador, []).
 
 test("Una persona humana esta viva en promedio hasta 80 años despues de su nacimiento"):-
