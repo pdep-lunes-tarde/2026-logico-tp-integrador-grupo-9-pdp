@@ -176,10 +176,13 @@ puebloMusical(Pueblo, Anio) :-
     N > M.
 
 puebloChismoso(Pueblo, Anio):-
-    forall(puebloRecuerdaHazania(Hazania,Anio,Pueblo), not(corrobarada(Hazania))).
+    forall(puebloRecuerdaHazania(Hazania,Anio,Pueblo), not(corroborada(Hazania))).
 
-hazaniaImportantePueblo(Hazania, Pueblo, Anio):-
-    forall(habitante(Persona, Pueblo, Anio,_), conocimiento(Persona, Hazania, _, _)).
+hazaniaImportantePueblo(Hazania, Pueblo, Anio) :-
+    forall(
+        (habitante(Persona, Pueblo, _, _), estaViva(Persona, Anio)),
+        recuerda(Persona, Hazania, Anio)
+    ).
 
 tiemposSinPrecedentes(Pueblo, Anio):-
     forall(hazaniaImportantePueblo(Hazania, Pueblo, Anio), conocimiento(_, Hazania, _, presencio)).
