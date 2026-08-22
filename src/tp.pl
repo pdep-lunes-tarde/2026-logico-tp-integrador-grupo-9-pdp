@@ -138,10 +138,7 @@ conmemorar_hazanias(hazania(destruir_rey_demonio, [frieren, himmel, heiter, eise
 conmemorar_hazanias(hazania(destruir_rey_demonio, [frieren, himmel, heiter, eisen], ende), 1370, estatua(bronce, equipo_de_heroes, [1400, 1450]), auberst).
 
 conmemorar_hazanias(hazania(destruir_schlat_el_omnisciente, [heroe_del_sur], ende), 1340, estatua(marmol, heroe_del_sur, [1410]), auberst).
-% Punto 4 
-% Parte a
 
-<<<<<<< HEAD
 % PARTE 2 TP
 
 % Punto 4
@@ -301,7 +298,6 @@ test("Una hazaña pasa al olvido si ya nadie la recuerda ese año", nondet):-
     not(al_olvido(rescatar_hermana_de_wirbel, 1400)). % Para el año 1400 Wirbel y Freiren recordarian la hazaña rescatar_hermana_de_wirbel
 
 test("Una hazaña es recordada por un pueblo si todos sus habitantes la recuerdan", nondet):-
-<<<<<<< HEAD
     puebloRecuerdaHazania(1400, destruir_rey_demonio, weise),
     puebloRecuerdaHazania(1395, rescatar_hermana_de_wirbel, klares),
     not(puebloRecuerdaHazania(1395, destruir_rey_demonio, klares)).
@@ -329,32 +325,4 @@ test("Un pueblo vive tiempos sin precedentes si todas las hazañas importantes d
     tiemposSinPrecedentes(1394, klares),
     not(tiemposSinPrecedentes(1400, weise)).
 
-=======
-    puebloRecuerdaHazania(destruir_rey_demonio, 1400, weise),
-    puebloRecuerdaHazania(rescatar_hermana_de_wirbel, 1395, klares),
-    not(puebloRecuerdaHazania(destruir_rey_demonio, 1395, klares)).
-
-test("El total de paginas leidas por un pueblo es la sumatoria de las cantidades leidas por cada habitante"):-
-    paginasPorPueblo(weise, 1335, 100),
-    paginasPorPueblo(weise, 0, 1336).
-
-test("El pueblo mas lector es aquel que hasta ese año sus habitantes son los que mas leyeron"):-
-    puebloMasLector(1400, ende).
-
-test("Cuando la mayoria de hazañas recordadas en un pueblo son recordadas mediante canciones entonces es un pueblo musical"):-
-    puebloMusical(auberst, 1395),
-    not(puebloMusical(weise,1400)).
-
-test("Un pueblo es chismoso si todas las hazañas que se recuerdan no estan corroboradas"):-
-    puebloChismoso(ende, 1420),
-    not(puebloChismoso(weise, 1400)).
-
-test("Si todos los habitantes que viven en un pueblo en cierto año recuerdan una hazaña entonces la misma es importante"):-
-    hazaniaImportantePueblo(destruir_rey_demonio, weise, 1400),
-    not(hazaniaImportantePueblo(recuperar_gato_perdido, weise, 1400)).
-
-test("Un pueblo vive tiempos sin precedentes si todas las hazañas importantes del pueblo fueron precenciadas por alguien"):-
-    tiemposSinPrecedentes(klares, 1395),
-    not(tiemposSinPrecedentes(weise, 1400)).
->>>>>>> 095958723000a4d2dd1e5e0983ed296a775608e5
 :- end_tests(tpIntegrador).
