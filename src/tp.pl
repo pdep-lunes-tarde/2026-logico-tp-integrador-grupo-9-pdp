@@ -22,7 +22,6 @@ promedio_vida(humano,80).
 promedio_vida(enano,350).
 
 
-% muerte(Persona, Anio) 
 muerte(Persona, Anio) :-
     habitante(Persona, _, AnioNacimiento, Raza),
     promedio_vida(Raza, Vida),
