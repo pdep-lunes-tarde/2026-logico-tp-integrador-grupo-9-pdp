@@ -168,7 +168,7 @@ puebloMusical(Anio, Pueblo):-
     length(HazaniasRecordadasPorCancion, CantidadDeHazaniasRecordadasPorCancion),
     CantidadDeHazaniasRecordadasPorCancion > CantidadDeHazaniasRecordadasPorOtrosMedios.
 
-hazaniasMusicales(Anio, Pueblo, CantidadDeHazaniasRecordadasPorCancion):-
+hazaniasMusicales(Anio, Pueblo, HazaniasRecordadasPorCancion):-
     findall(NombreHazania, 
             (habitante(Persona, Pueblo, _, _), 
             conocimiento(_, hazania(NombreHazania, _, _), _, escucho_cancion), 
