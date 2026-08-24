@@ -163,11 +163,20 @@ puebloMasLector(Anio, Pueblo):-
 
 puebloMusical(Anio, Pueblo):-
     esPueblo(Pueblo),
+    hazaniasMusicales(Anio, Pueblo, HazaniasRecordadasPorCancion),
+    hazaniasNoMusicales(Anio, Pueblo, HazaniasRecordadasPorCancion, CantidadDeHazaniasRecordadasPorOtrosMedios),
+    length(HazaniasRecordadasPorCancion, CantidadDeHazaniasRecordadasPorCancion),
+    CantidadDeHazaniasRecordadasPorCancion > CantidadDeHazaniasRecordadasPorOtrosMedios.
+
+hazaniasMusicales(Anio, Pueblo, CantidadDeHazaniasRecordadasPorCancion):-
     findall(NombreHazania, 
             (habitante(Persona, Pueblo, _, _), 
             conocimiento(_, hazania(NombreHazania, _, _), _, escucho_cancion), 
             recuerda(Persona, NombreHazania, Anio)), 
-            HazaniasRecordadasPorCancion),    
+            HazaniasRecordadasPorCancion).
+    
+
+hazaniasNoMusicales(Anio, Pueblo, HazaniasRecordadasPorCancion, CantidadDeHazaniasRecordadasPorOtrosMedios):-
     findall(NombreHazania, 
             (habitante(Persona, Pueblo, _, _), 
             conocimiento(_, hazania(NombreHazania, _, _), _, Medio), 
@@ -175,9 +184,7 @@ puebloMusical(Anio, Pueblo):-
             Medio \= escucho_cancion,
             not(member(NombreHazania, HazaniasRecordadasPorCancion))), 
             HazaniasRecordadasPorOtrosMedios),
-    length(HazaniasRecordadasPorCancion, CantidadDeHazaniasRecordadasPorCancion),
-    length(HazaniasRecordadasPorOtrosMedios, CantidadDeHazaniasRecordadasPorOtrosMedios),
-    CantidadDeHazaniasRecordadasPorCancion > CantidadDeHazaniasRecordadasPorOtrosMedios.
+    length(HazaniasRecordadasPorOtrosMedios, CantidadDeHazaniasRecordadasPorOtrosMedios).
 
 puebloChismoso(Anio, Pueblo):-
     esPueblo(Pueblo),
