@@ -220,9 +220,23 @@ cadenaValida(Heroe, HeroesEnLista, [Heroe, HeroeInfluenciado | Resto]) :-
 
 % Punto 6
 
-cadenaDeAntecesores(Heroe, Antecesores):-
-    cadenaDeInspiracion(_, Antecesores),
-    last(Antecesores, Heroe).
+esAntecesorDe(Antecesor, Heroe) :-
+    cadenaDeInspiracion(Antecesor, Cadena),
+    last(Cadena, Heroe),
+    Antecesor \= Heroe.
+
+antecesoresElegidos(Heroe, HeroesEnLista, [Antecesor]) :-
+    esAntecesorDe(Antecesor, Heroe),
+    not(member(Antecesor, HeroesEnLista)).
+
+antecesoresElegidos(Heroe, HeroesEnLista, [Antecesor | Resto]) :-
+    esAntecesorDe(Antecesor, Heroe),
+    not(member(Antecesor, HeroesEnLista)),
+    antecesoresElegidos(Heroe, [Antecesor | HeroesEnLista], Resto).
+
+dreamTeam(Heroe, Equipo) :-
+    antecesoresElegidos(Heroe, [Heroe], Antecesores),
+    permutation([Heroe | Antecesores], Equipo).
 
 :- begin_tests(tpIntegrador, []).
 
